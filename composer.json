@@ -1,0 +1,10 @@
+{
+  "require": {
+    "ext-xdebug": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
+}
