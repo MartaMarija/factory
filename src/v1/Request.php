@@ -1,8 +1,6 @@
 <?php
 
-namespace App;
-
-use Couchbase\BadInputException;
+namespace App\v1;
 
 class Request implements RequestInterface
 {

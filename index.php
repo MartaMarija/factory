@@ -2,10 +2,11 @@
 
 require_once 'vendor/autoload.php';
 
-use App\Request;
-use App\Router;
+use App\v1\Request;
+use App\v1\Router;
+use App\v1\Response;
 
-include("./src/routes.php");
+include("./src/v1/routes.php");
 
 $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
@@ -14,12 +15,12 @@ if ($method != "POST" && $method != "GET") {
     return;
 }
 
-
 $request = new Request(apache_request_headers(), $_GET, $_POST);
 
 $router = Router::getRouter();
-$response = $router->resolveRoute($method, $url, $request);
-echo $response;
+
+$response = new Response($router->resolveRoute($method, $url, $request));
+echo $response->send();
 
 
 
