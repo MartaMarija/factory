@@ -1,14 +1,12 @@
 <?php
 
-namespace App\v1;
+namespace App;
 
 class Response implements ResponseInterface
 {
-    public string $message;
     
-    public function __construct(string $message)
+    public function __construct(private string $message)
     {
-        $this->message = $message;
     }
     
     function send(): string

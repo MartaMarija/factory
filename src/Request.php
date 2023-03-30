@@ -1,18 +1,18 @@
 <?php
 
-namespace App\v1;
+namespace App;
 
 class Request implements RequestInterface
 {
-    private array $headers;
-    private array $params;
-    private array $body;
+    public array $headers;
+    public array $params;
+    public array $body;
     
-    public function __construct(array $headers, array $params, array $body)
+    public function __construct()
     {
-        $this->headers = $headers;
-        $this->params = $params;
-        $this->body = $body;
+        $this->headers = apache_request_headers();
+        $this->params = $_GET;
+        $this->body = $_POST;
     }
     
     public function getHeaders(): array
