@@ -13,6 +13,7 @@ class Request implements RequestInterface
     public function __construct()
     {
         $this->headers = apache_request_headers();
+        $this->params = $_GET;
         $this->body = $_POST;
         $this->method = $_SERVER['REQUEST_METHOD'];
         $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -31,7 +32,7 @@ class Request implements RequestInterface
 
     public function addParam(string $key, string $value): void
     {
-        $this->params = [$key => $value];
+        $this->params[$key] = $value;
     }
 
     public function getBody(): array
