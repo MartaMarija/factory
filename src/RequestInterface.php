@@ -8,7 +8,13 @@ interface RequestInterface
 
     public function getParams(): array;
 
+    public function addParam(string $key, string $value): void;
+
     public function getBody(): array;
+
+    public function getMethod(): string;
+
+    public function getUrl(): array;
 
     public function getHeadersValue(string $key): string;
 
