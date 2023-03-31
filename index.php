@@ -7,9 +7,8 @@ use App\Request;
 
 include("./src/routes.php");
 
-$router = Router::getRouter();
 $request = new Request();
-$response = $router->resolveRoute($request);
+$response = Router::resolveRoute($request);
 echo $response->send();
 
 
