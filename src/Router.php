@@ -6,7 +6,7 @@ class Router
 {
     private array $routes;
     private static mixed $router;
-    
+
     public static function getRouter()
     {
         $cls = static::class;
@@ -15,13 +15,13 @@ class Router
         }
         return self::$router[$cls];
     }
-    
+
     public function addRoute(string $method, string $url, callable $callback): void
     {
         $routeData = ['method' => $method, 'url' => $url, 'callback' => $callback];
         $this->routes[] = $routeData;
     }
-    
+
     public function resolveRoute(RequestInterface $request): ResponseInterface
     {
         $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -34,4 +34,3 @@ class Router
         return new Response("Ruta: '" . $url . "' + Metoda: '" . $method . "' ne postoji!");
     }
 }
-

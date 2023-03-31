@@ -4,5 +4,5 @@ namespace App;
 
 interface ResponseInterface
 {
-    function send(): string;
+    public function send(): string;
 }

@@ -5,7 +5,6 @@ use App\Router;
 use App\ResponseInterface;
 use App\Response;
 
-
 $router = Router::getRouter();
 
 $router->addRoute("GET", "/index.php", function (RequestInterface $request): ResponseInterface {
@@ -15,6 +14,3 @@ $router->addRoute("GET", "/index.php", function (RequestInterface $request): Res
 $router->addRoute("POST", "/index.php", function (RequestInterface $request): ResponseInterface {
     return new Response("POST methoda: ime => " . $request->getParamsValue("ime"));
 });
-
-
-
