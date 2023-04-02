@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\JsonResponse;
 use App\RequestInterface;
 use App\Response;
 use App\ResponseInterface;
@@ -19,9 +20,14 @@ class UserController
         foreach ($this->users as $user) {
             if ($user['name'] === $name) {
                 $userAge = $user['age'];
-                return new Response("User '$name' is $userAge years old!");
+                return new JsonResponse(['user' => $name, 'age' => $userAge]);
             }
         }
-        return new Response("User '$name' doesn't exist!");
+        return new JsonResponse(['error' => "User '$name' doesn't exist!"], Response::HTTP_NOT_FOUND);
+    }
+    
+    public function getUsers(RequestInterface $request): ResponseInterface
+    {
+        return new JsonResponse(['users' => $this->users]);
     }
 }
