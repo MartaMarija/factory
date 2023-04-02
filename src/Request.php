@@ -4,12 +4,14 @@ namespace App;
 
 class Request implements RequestInterface
 {
+    public const METHOD_GET = 'GET';
+    public const METHOD_POST = 'POST';
     public array $headers;
     public array $params;
     public array $body;
     public string $method;
-    public array $url;
-
+    public array $urlParts;
+    
     public function __construct()
     {
         $this->headers = apache_request_headers();
@@ -17,39 +19,39 @@ class Request implements RequestInterface
         $this->body = $_POST;
         $this->method = $_SERVER['REQUEST_METHOD'];
         $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $this->url = explode('/', $url);
+        $this->urlParts = explode('/', $url);
     }
-
+    
     public function getHeaders(): array
     {
         return $this->headers;
     }
-
+    
     public function getParams(): array
     {
         return $this->params;
     }
-
+    
     public function addParam(string $key, string $value): void
     {
         $this->params[$key] = $value;
     }
-
+    
     public function getBody(): array
     {
         return $this->body;
     }
-
+    
     public function getMethod(): string
     {
         return $this->method;
     }
-
-    public function getUrl(): array
+    
+    public function getUrlParts(): array
     {
-        return $this->url;
+        return $this->urlParts;
     }
-
+    
     public function getHeadersValue(string $key): string
     {
         if (!array_key_exists($key, $this->headers)) {
@@ -57,7 +59,7 @@ class Request implements RequestInterface
         }
         return $this->headers[$key];
     }
-
+    
     public function getBodyValue(string $key): string
     {
         if (!array_key_exists($key, $this->body)) {
@@ -65,7 +67,7 @@ class Request implements RequestInterface
         }
         return $this->body[$key];
     }
-
+    
     public function getParamsValue(string $key): string
     {
         if (!array_key_exists($key, $this->params)) {
