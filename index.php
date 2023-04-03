@@ -11,7 +11,7 @@ include("./src/routes.php");
 $request = new Request();
 try {
     $response = Router::resolveRoute($request);
-} catch(AppError $e) {
+    echo $response->send();
+} catch (AppError $e) {
     echo $e->getMessage();
 }
-echo $response->send();
