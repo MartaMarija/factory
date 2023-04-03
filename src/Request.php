@@ -6,40 +6,29 @@ class Request implements RequestInterface
 {
     public const METHOD_GET = 'GET';
     public const METHOD_POST = 'POST';
-    public array $headers;
-    public array $params;
-    public array $body;
-    public string $method;
-    public array $urlParts;
+    private array $headers;
+    private array $attributes;
+    private array $query;
+    private array $body;
+    private string $method;
+    private array $urlParts;
     
     public function __construct()
     {
         $this->headers = apache_request_headers();
-        $this->params = $_GET;
+        $this->query = $_GET;
         $this->body = $_POST;
         $this->method = $_SERVER['REQUEST_METHOD'];
         $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $this->urlParts = explode('/', $url);
     }
     
-    public function getHeaders(): array
+    public function getHeadersValue(string $key): string
     {
-        return $this->headers;
-    }
-    
-    public function getParams(): array
-    {
-        return $this->params;
-    }
-    
-    public function addParam(string $key, string $value): void
-    {
-        $this->params[$key] = $value;
-    }
-    
-    public function getBody(): array
-    {
-        return $this->body;
+        if (array_key_exists($key, $this->headers)) {
+            return $this->headers[$key];
+        }
+        throw new AppError(Response::HTTP_NOT_FOUND, "'$key' not found!");
     }
     
     public function getMethod(): string
@@ -52,27 +41,22 @@ class Request implements RequestInterface
         return $this->urlParts;
     }
     
-    public function getHeadersValue(string $key): string
+    public function getParams(): array
     {
-        if (!array_key_exists($key, $this->headers)) {
-            throw new AppError(404, "'$key' not found!");
-        }
-        return $this->headers[$key];
+        return array_merge($this->attributes, $this->query, $this->body);
     }
     
-    public function getBodyValue(string $key): string
+    public function getParam(string $key): string
     {
-        if (!array_key_exists($key, $this->body)) {
-            throw new AppError(404, "'$key' not found!");
+        $params = $this->getParams();
+        if (array_key_exists($key, $params)) {
+            return $params[$key];
         }
-        return $this->body[$key];
+        throw new AppError(Response::HTTP_NOT_FOUND, "'$key' not found!");
     }
     
-    public function getParamsValue(string $key): string
+    public function addParam(string $key, string $value): void
     {
-        if (!array_key_exists($key, $this->params)) {
-            throw new AppError(404, "'$key' not found!");
-        }
-        return $this->params[$key];
+        $this->attributes[$key] = $value;
     }
 }
