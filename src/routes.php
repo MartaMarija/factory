@@ -9,8 +9,14 @@ $routeVersion = '/api/v1';
 
 Router::addRoute(
     Request::METHOD_GET,
+    $routeVersion . '/users',
+    [new UserController(), 'getUsers']
+);
+
+Router::addRoute(
+    Request::METHOD_GET,
     $routeVersion . '/users/{userName}/age',
-    [new UserController, 'getUserAge']
+    [new UserController(), 'getUserAge']
 );
 
 //Router::addRoute(

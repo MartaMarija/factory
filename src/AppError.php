@@ -4,9 +4,9 @@ namespace App;
 
 class AppError extends \Error
 {
-    public function __construct(public $statusCode, string $message)
+    public function __construct(public $code, string $message)
     {
-        parent::__construct($message, $statusCode);
-        http_response_code($this->statusCode);
+        parent::__construct($message, $code);
+        http_response_code($this->code);
     }
 }

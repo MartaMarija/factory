@@ -13,10 +13,10 @@ class UserController
         ['name' => 'ana', 'age' => '20', 'favColor' => 'yellow'],
         ['name' => 'sara', 'age' => '30', 'favColor' => 'green']
     ];
-    
+
     public function getUserAge(RequestInterface $request): ResponseInterface
     {
-        $name = $request->getParamsValue('userName');
+        $name = $request->getParam('userName');
         foreach ($this->users as $user) {
             if ($user['name'] === $name) {
                 $userAge = $user['age'];
@@ -25,7 +25,7 @@ class UserController
         }
         return new JsonResponse(['error' => "User '$name' doesn't exist!"], Response::HTTP_NOT_FOUND);
     }
-    
+
     public function getUsers(RequestInterface $request): ResponseInterface
     {
         return new JsonResponse(['users' => $this->users]);

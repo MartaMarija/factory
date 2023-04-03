@@ -5,14 +5,14 @@ namespace App;
 class Router
 {
     private static array $routes;
-    
+
     public static function addRoute(string $method, string $url, callable $callback): void
     {
         $urlParts = explode('/', $url);
         $routeData = ['method' => $method, 'urlParts' => $urlParts, 'callback' => $callback];
         self::$routes[] = $routeData;
     }
-    
+
     public static function resolveRoute(RequestInterface $request): ResponseInterface
     {
         $requestUrlParts = $request->getUrlParts();
@@ -41,6 +41,6 @@ class Router
                 return call_user_func($route['callback'], $request);
             }
         }
-        throw new AppError(404, "Route not found!");
+        throw new AppError(Response::HTTP_NOT_FOUND, 'Route not found!');
     }
 }
