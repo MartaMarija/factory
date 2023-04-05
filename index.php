@@ -3,10 +3,13 @@
 require_once 'vendor/autoload.php';
 
 use App\AppError;
+use App\DB\Database;
 use App\Router;
 use App\Request;
 
 include("./src/routes.php");
+
+Database::getInstance();
 
 $request = new Request();
 try {

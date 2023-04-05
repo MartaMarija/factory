@@ -44,4 +44,15 @@ class Database
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    public static function selectOne(string $sqlStatement, array $data = []): ?array
+    {
+        $statement = self::$connection->prepare($sqlStatement);
+        foreach ($data as $key => $value) {
+            $statement->bindValue($key, $value);
+        }
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
+    }
 }

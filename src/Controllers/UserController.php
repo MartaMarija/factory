@@ -16,14 +16,16 @@ class UserController
         $users = UserDB::getUsers();
         return new JsonResponse(['users' => $users]);
     }
+    
+    public function getUserById(RequestInterface $request): ResponseInterface
+    {
+        $id = $request->getParam('id');
+        $user = UserDB::getUserById($id);
+        return new JsonResponse(['user' => $user]);
+    }
 }
 
 
-//    private array $users1 = [
-//        ['name' => 'ana', 'age' => '20', 'favColor' => 'yellow'],
-//        ['name' => 'sara', 'age' => '30', 'favColor' => 'green']
-//    ];
-//
 //    public function getUserAge(RequestInterface $request): ResponseInterface
 //    {
 //        $name = $request->getParam('userName');
