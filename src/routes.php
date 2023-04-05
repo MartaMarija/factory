@@ -12,8 +12,8 @@ Router::addRoute(
     [new UserController(), 'getUsers']
 );
 
-Router::addRoute(
-    Request::METHOD_GET,
-    $routeVersion . '/users/{userName}/age',
-    [new UserController(), 'getUserAge']
-);
+//Router::addRoute(
+//    Request::METHOD_GET,
+//    $routeVersion . '/users/{userName}/age',
+//    [new UserController(), 'getUserAge']
+//);
