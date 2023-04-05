@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\DB\UserDB;
+use App\DB\Database;
 use App\JsonResponse;
 use App\RequestInterface;
 use App\Response;
@@ -13,14 +13,29 @@ class UserController
 {
     public function getUsers(RequestInterface $request): ResponseInterface
     {
-        $users = UserDB::getUsers();
+        $db = Database::getInstance();
+        $users = $db
+            ->select(['first_name', 'last_name'])
+            ->from('user')
+            ->where([
+                ['email' => ['LIKE', '%.com']],
+                ['email' => ['LIKE', 'm%']]
+            ])
+            ->execute();
         return new JsonResponse(['users' => $users]);
     }
     
     public function getUserById(RequestInterface $request): ResponseInterface
     {
         $id = $request->getParam('id');
-        $user = UserDB::getUserById($id);
+        $db = Database::getInstance();
+        $user = $db
+            ->select()
+            ->from('user')
+            ->where([
+                ['id' => $id]
+            ])
+            ->executeOne();
         return new JsonResponse(['user' => $user]);
     }
 }
