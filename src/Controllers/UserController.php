@@ -24,7 +24,7 @@ class UserController
                     ['email' => ['LIKE', '%.com']],
                     ['email' => ['LIKE', 'm%']]
                 ])
-                ->fetchAll();
+                ->executeSelectAll();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
@@ -42,7 +42,7 @@ class UserController
                 ->where([
                     ['id' => ['=', $id]]
                 ])
-                ->fetchOne();
+                ->executeSelectOne();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
@@ -57,7 +57,26 @@ class UserController
             $numberOfInserts = $qb
                 ->insertInto('user', ['first_name', 'last_name', 'email', 'password'])
                 ->values($users)
-                ->save();
+                ->executeInsert();
+        } catch (AppError $e) {
+            return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
+        }
+        return new JsonResponse(['numberOfInserts' => $numberOfInserts]);
+    }
+    
+    public function updateUserName(RequestInterface $request): ResponseInterface
+    {
+        $id = $request->getParam('id');
+        $newName = $request->getParam('name');
+        try {
+            $qb = new QueryBuilder();
+            $numberOfInserts = $qb
+                ->update('user')
+                ->set(['first_name' => $newName])
+                ->where([
+                    ['id' => ['=', $id]]
+                ])
+                ->executeUpdate();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
@@ -71,7 +90,7 @@ class UserController
             $users = $qb
                 ->select(['first_name'])
                 ->from('user')
-                ->fetchAll();
+                ->executeSelectAll();
         } catch (AppError $e) {
             return new TwigResponse(
                 'error',

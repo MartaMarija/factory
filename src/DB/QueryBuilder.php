@@ -2,8 +2,6 @@
 
 namespace App\DB;
 
-use App\AppError;
-
 class QueryBuilder
 {
     private string $table;
@@ -11,17 +9,18 @@ class QueryBuilder
     private string $whereConditions = '';
     private array $placeholdersValues = [];
     private string $insertPlaceholders = '';
+    private string $setClause = '';
     
     //-------------- SELECT --------------//
     
-    public function fetchAll(): array
+    public function executeSelectAll(): array
     {
         $sqlStatement = $this->getQueryStatement();
         $db = Database::getInstance();
         return $db->fetchAll($sqlStatement, $this->placeholdersValues);
     }
     
-    public function fetchOne(): ?array
+    public function executeSelectOne(): ?array
     {
         $sqlStatement = $this->getQueryStatement();
         $db = Database::getInstance();
@@ -100,11 +99,11 @@ class QueryBuilder
     
     //-------------- INSERT --------------//
     
-    public function save(): int
+    public function executeInsert(): int
     {
         $sqlStatement = $this->getInsertStatement();
         $db = Database::getInstance();
-        return $db->save($sqlStatement, $this->placeholdersValues);
+        return $db->insert($sqlStatement, $this->placeholdersValues);
     }
     
     private function getInsertStatement(): string
@@ -117,6 +116,7 @@ class QueryBuilder
         return $sqlStatement;
     }
     
+    //TODO povezati sve u istu metodu
     public function insertInto(string $table, array $columns = []): self
     {
         $this->table = $table;
@@ -126,6 +126,9 @@ class QueryBuilder
     
     public function values(array $rows): self
     {
+        if ($this->isOneRow($rows)) {
+            $rows = [$rows];
+        }
         $this->placeholdersValues = $rows;
         $numberOfColumns = count($rows[0]);
         $numberOfRows = count($rows);
@@ -145,5 +148,46 @@ class QueryBuilder
     {
         $rowPlaceholders = '(' . implode(',', array_fill(0, $numberOfColumns, '?')) . ')';
         return implode(',', array_fill(0, $numberOfRows, $rowPlaceholders));
+    }
+    
+    private function isOneRow(array $rows): bool
+    {
+        return !is_array($rows[0]);
+    }
+    
+    //-------------- UPDATE --------------//
+    
+    public function executeUpdate(): int
+    {
+        $sqlStatement = $this->getUpdateStatement();
+        $db = Database::getInstance();
+        return $db->update($sqlStatement, $this->placeholdersValues);
+    }
+    
+    private function getUpdateStatement(): string
+    {
+        $sqlStatement = "UPDATE $this->table SET $this->setClause";
+        if (!empty($this->whereConditions)) {
+            $sqlStatement .= " WHERE $this->whereConditions";
+        }
+        return $sqlStatement;
+    }
+    
+    public function update(string $table): self
+    {
+        $this->table = $table;
+        return $this;
+    }
+    
+    public function set(array $data): self
+    {
+        $this->setClause = $this->connectSetClause($data);
+        $this->placeholdersValues = $data;
+        return $this;
+    }
+    
+    private function connectSetClause(array $data): string
+    {
+        return implode(', ', array_map(fn($key) => "`$key`=:$key", array_keys($data)));
     }
 }

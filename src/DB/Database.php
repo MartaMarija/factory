@@ -6,6 +6,7 @@ use App\AppError;
 use App\Response;
 use PDO;
 use PDOException;
+use PDOStatement;
 
 class Database
 {
@@ -40,11 +41,7 @@ class Database
     public function fetchAll(string $sqlStatement, array $placeholdersValues): array
     {
         try {
-            $statement = self::$connection->prepare($sqlStatement);
-            foreach ($placeholdersValues as $condition => $value) {
-                $statement->bindValue($condition, $value);
-            }
-            $statement->execute();
+            $statement = $this->executeSqlStatement($sqlStatement, $placeholdersValues);
         } catch (PDOException $e) {
             throw new AppError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
         }
@@ -54,11 +51,7 @@ class Database
     public function fetchOne(string $sqlStatement, array $placeholdersValues): ?array
     {
         try {
-            $statement = self::$connection->prepare($sqlStatement);
-            foreach ($placeholdersValues as $condition => $value) {
-                $statement->bindValue($condition, $value);
-            }
-            $statement->execute();
+            $statement = $this->executeSqlStatement($sqlStatement, $placeholdersValues);
         } catch (PDOException $e) {
             throw new AppError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
         }
@@ -66,21 +59,46 @@ class Database
         return $result ?: null;
     }
     
-    public function save(string $sqlStatement, array $placeholdersValues): string
+    public function insert(string $sqlStatement, array $placeholdersValues): string
     {
         try {
             $statement = self::$connection->prepare($sqlStatement);
-            $numberOfPlaceholders = 1;
-            foreach ($placeholdersValues as $row) {
-                foreach ($row as $value) {
-                    $statement->bindValue($numberOfPlaceholders, $value);
-                    $numberOfPlaceholders++;
-                }
-            }
+            $this->bindInsertValues($placeholdersValues, $statement);
             $statement->execute();
         } catch (PDOException $e) {
             throw new AppError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
         }
         return $statement->rowCount();
+    }
+    
+    public function update(string $sqlStatement, array $placeholdersValues): string
+    {
+        try {
+            $statement = $this->executeSqlStatement($sqlStatement, $placeholdersValues);
+        } catch (PDOException $e) {
+            throw new AppError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+        }
+        return $statement->rowCount();
+    }
+    
+    private function bindInsertValues(array $placeholdersValues, PDOStatement $statement): void
+    {
+        $numberOfPlaceholders = 1;
+        foreach ($placeholdersValues as $row) {
+            foreach ($row as $value) {
+                $statement->bindValue($numberOfPlaceholders, $value);
+                $numberOfPlaceholders++;
+            }
+        }
+    }
+    
+    public function executeSqlStatement(string $sqlStatement, array $placeholdersValues): PDOStatement|false
+    {
+        $statement = self::$connection->prepare($sqlStatement);
+        foreach ($placeholdersValues as $condition => $value) {
+            $statement->bindValue($condition, $value);
+        }
+        $statement->execute();
+        return $statement;
     }
 }
