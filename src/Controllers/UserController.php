@@ -33,7 +33,7 @@ class UserController
             ->select()
             ->from('user')
             ->where([
-                ['id' => $id]
+                ['id' => ['=', $id]]
             ])
             ->fetchOne();
         return new JsonResponse(['user' => $user]);
