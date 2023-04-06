@@ -21,8 +21,8 @@ class UserController
                 ['email' => ['LIKE', '%.com']],
                 ['email' => ['LIKE', 'm%']]
             ])
-            ->execute();
-        return new JsonResponse(['users' => $users]);
+            ->fetchAll();
+        return new JsonResponse(['insertedUsers' => $users]);
     }
     
     public function getUserById(RequestInterface $request): ResponseInterface
@@ -35,8 +35,19 @@ class UserController
             ->where([
                 ['id' => $id]
             ])
-            ->executeOne();
+            ->fetchOne();
         return new JsonResponse(['user' => $user]);
+    }
+    
+    public function addUsers(RequestInterface $request): ResponseInterface
+    {
+        $users = $request->getParam('users');
+        $db = Database::getInstance();
+        $numberOfInserts = $db
+            ->insertInto('user', ['first_name', 'last_name', 'email', 'password'])
+            ->values($users)
+            ->insert();
+        return new JsonResponse(['numberOfInserts' => $numberOfInserts]);
     }
 }
 

@@ -17,3 +17,9 @@ Router::addRoute(
     $routeVersion . '/users/{id}',
     [new UserController(), 'getUserById']
 );
+
+Router::addRoute(
+    Request::METHOD_POST,
+    $routeVersion . '/users',
+    [new UserController(), 'addUsers']
+);
