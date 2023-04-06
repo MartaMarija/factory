@@ -16,11 +16,22 @@ class Request implements RequestInterface
     public function __construct()
     {
         $this->headers = apache_request_headers();
+        $this->attributes = [];
         $this->query = $_GET;
-        $this->body = $_POST;
+        if (isset($_SERVER['CONTENT_TYPE']) && str_contains($_SERVER['CONTENT_TYPE'], 'application/json')) {
+            $this->body = $this->decodeJson();
+        } else {
+            $this->body = $_POST;
+        }
         $this->method = $_SERVER['REQUEST_METHOD'];
         $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $this->urlParts = explode('/', $url);
+    }
+    
+    private function decodeJson(): array
+    {
+        $data = file_get_contents('php://input');
+        return json_decode($data, true);
     }
     
     public function getHeadersValue(string $key): string
@@ -28,7 +39,7 @@ class Request implements RequestInterface
         if (array_key_exists($key, $this->headers)) {
             return $this->headers[$key];
         }
-        throw new AppError(Response::HTTP_NOT_FOUND, "'$key' not found!");
+        throw new AppError(Response::HTTP_NOT_FOUND, "Key '$key' not found!");
     }
     
     public function getMethod(): string
@@ -46,7 +57,7 @@ class Request implements RequestInterface
         return array_merge($this->attributes, $this->query, $this->body);
     }
     
-    public function getParam(string $key): string
+    public function getParam(string $key): string|array
     {
         $params = $this->getParams();
         if (array_key_exists($key, $params)) {
