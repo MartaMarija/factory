@@ -20,7 +20,7 @@ class TwigResponse implements ResponseInterface
             $this->html = $twig->render($fileName . '.html.twig', $data);
         } catch (LoaderError|RuntimeError|SyntaxError $e) {
             $this->code = Response::HTTP_NOT_FOUND;
-            $this->html = "File '$fileName' doesn't exist!";
+            $this->html = $e->getMessage();
         }
     }
     

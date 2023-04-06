@@ -14,6 +14,12 @@ Router::addRoute(
 
 Router::addRoute(
     Request::METHOD_GET,
+    $routeVersion . '/users/age',
+    [new UserController(), 'getUsersTwig']
+);
+
+Router::addRoute(
+    Request::METHOD_GET,
     $routeVersion . '/users/{id}',
     [new UserController(), 'getUserById']
 );
