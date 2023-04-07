@@ -7,6 +7,7 @@ class QueryBuilder
     private string $table;
     private string $columns;
     private string $whereConditions = '';
+    private string $limit = '';
     private array $placeholdersValues = [];
     private string $insertPlaceholders = '';
     private string $setClause = '';
@@ -33,6 +34,9 @@ class QueryBuilder
         if (!empty($this->whereConditions)) {
             $sqlStatement .= " WHERE $this->whereConditions";
         }
+        if (!empty($this->limit)) {
+            $sqlStatement .= " LIMIT $this->limit";
+        }
         return $sqlStatement;
     }
     
@@ -51,6 +55,12 @@ class QueryBuilder
     public function where(array $whereConditions): self
     {
         $this->whereConditions = $this->connectWhereConditions($whereConditions);
+        return $this;
+    }
+    
+    public function limit(int $numOfRows): self
+    {
+        $this->limit = $numOfRows;
         return $this;
     }
     

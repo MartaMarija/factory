@@ -24,11 +24,12 @@ class UserController
                     ['email' => ['LIKE', '%.com']],
                     ['email' => ['LIKE', 'm%']]
                 ])
+                ->limit(1)
                 ->executeSelectAll();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
-        return new JsonResponse(['insertedUsers' => $users]);
+        return new JsonResponse(['users' => $users]);
     }
     
     public function getUserById(RequestInterface $request): ResponseInterface
