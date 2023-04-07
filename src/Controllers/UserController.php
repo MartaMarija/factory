@@ -56,8 +56,7 @@ class UserController
         try {
             $qb = new QueryBuilder();
             $lastInsertedId = $qb
-                ->insertInto('user', ['first_name', 'last_name', 'email', 'password'])
-                ->values($users)
+                ->insert('user', $users, ['first_name', 'last_name', 'email', 'password'])
                 ->executeInsert();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());

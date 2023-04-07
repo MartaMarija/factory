@@ -127,14 +127,15 @@ class QueryBuilder
     }
     
     //TODO povezati sve u istu metodu
-    public function insertInto(string $table, array $columns = []): self
+    public function insert(string $table, array $rows, array $columns = []): self
     {
         $this->table = $table;
+        $this->handleRows($rows);
         $this->columns = $this->connectInsertColumns($columns);
         return $this;
     }
     
-    public function values(array $rows): self
+    public function handleRows(array $rows): void
     {
         if ($this->isOneRow($rows)) {
             $rows = [$rows];
@@ -143,15 +144,6 @@ class QueryBuilder
         $numberOfColumns = count($rows[0]);
         $numberOfRows = count($rows);
         $this->insertPlaceholders = $this->connectInsertPlaceholders($numberOfColumns, $numberOfRows);
-        return $this;
-    }
-    
-    private function connectInsertColumns(array $columns): string
-    {
-        if (empty($columns)) {
-            return '';
-        }
-        return implode(', ', $columns);
     }
     
     private function connectInsertPlaceholders(int $numberOfColumns, int $numberOfRows): string
@@ -163,6 +155,14 @@ class QueryBuilder
     private function isOneRow(array $rows): bool
     {
         return !is_array($rows[0]);
+    }
+    
+    private function connectInsertColumns(array $columns): string
+    {
+        if (empty($columns)) {
+            return '';
+        }
+        return implode(', ', $columns);
     }
     
     //-------------- UPDATE --------------//
