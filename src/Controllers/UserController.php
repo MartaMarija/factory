@@ -51,17 +51,17 @@ class UserController
     
     public function addUsers(RequestInterface $request): ResponseInterface
     {
-        $users = $request->getParam('users');
+        $users = $request->getParam('user');
         try {
             $qb = new QueryBuilder();
-            $numberOfInserts = $qb
+            $lastInsertedId = $qb
                 ->insertInto('user', ['first_name', 'last_name', 'email', 'password'])
                 ->values($users)
                 ->executeInsert();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
-        return new JsonResponse(['numberOfInserts' => $numberOfInserts]);
+        return new JsonResponse(['lastInsertedId' => $lastInsertedId]);
     }
     
     public function updateUserName(RequestInterface $request): ResponseInterface
@@ -70,7 +70,7 @@ class UserController
         $newName = $request->getParam('name');
         try {
             $qb = new QueryBuilder();
-            $numberOfInserts = $qb
+            $numOfUpdatedRows = $qb
                 ->update('user')
                 ->set(['first_name' => $newName])
                 ->where([
@@ -80,7 +80,7 @@ class UserController
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
-        return new JsonResponse(['numberOfInserts' => $numberOfInserts]);
+        return new JsonResponse(['numOfUpdatedRows' => $numOfUpdatedRows]);
     }
     
     public function getUsersTwig(RequestInterface $request): ResponseInterface

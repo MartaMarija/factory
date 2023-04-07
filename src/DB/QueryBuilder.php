@@ -99,7 +99,7 @@ class QueryBuilder
     
     //-------------- INSERT --------------//
     
-    public function executeInsert(): int
+    public function executeInsert(): string
     {
         $sqlStatement = $this->getInsertStatement();
         $db = Database::getInstance();
@@ -188,6 +188,6 @@ class QueryBuilder
     
     private function connectSetClause(array $data): string
     {
-        return implode(', ', array_map(fn($key) => "`$key`=:$key", array_keys($data)));
+        return implode(', ', array_map(fn ($key) => "`$key`=:$key", array_keys($data)));
     }
 }

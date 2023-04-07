@@ -68,10 +68,10 @@ class Database
         } catch (PDOException $e) {
             throw new AppError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
         }
-        return $statement->rowCount();
+        return self::$connection->lastInsertId();
     }
     
-    public function update(string $sqlStatement, array $placeholdersValues): string
+    public function update(string $sqlStatement, array $placeholdersValues): int
     {
         try {
             $statement = $this->executeSqlStatement($sqlStatement, $placeholdersValues);
