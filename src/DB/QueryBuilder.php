@@ -2,6 +2,10 @@
 
 namespace App\DB;
 
+use App\AppError;
+use App\Response;
+use App\Utils;
+
 class QueryBuilder
 {
     private string $table;
@@ -118,28 +122,30 @@ class QueryBuilder
     
     private function getInsertStatement(): string
     {
-        $sqlStatement = "INSERT INTO $this->table";
-        if (!empty($this->columns)) {
-            $sqlStatement .= "( $this->columns )";
-        }
-        $sqlStatement .= " VALUES $this->insertPlaceholders";
-        return $sqlStatement;
+        return "INSERT INTO $this->table ($this->columns) VALUES $this->insertPlaceholders";
     }
     
-    //TODO povezati sve u istu metodu
-    public function insert(string $table, array $rows, array $columns = []): self
-    {
-        $this->table = $table;
-        $this->handleRows($rows);
-        $this->columns = $this->connectInsertColumns($columns);
-        return $this;
-    }
-    
-    public function handleRows(array $rows): void
+    public function insert(string $table, array $rows): self
     {
         if ($this->isOneRow($rows)) {
             $rows = [$rows];
         }
+        if (!Utils::isAssocArray($rows[0])) {
+            throw new AppError(Response::HTTP_BAD_REQUEST, 'Bad format!');
+        }
+        $this->table = $table;
+        $this->handleRows($rows);
+        $this->columns = $this->connectInsertColumns($rows);
+        return $this;
+    }
+    
+    private function isOneRow(array $rows): bool
+    {
+        return !is_array($rows[0]);
+    }
+    
+    public function handleRows(array $rows): void
+    {
         $this->placeholdersValues = $rows;
         $numberOfColumns = count($rows[0]);
         $numberOfRows = count($rows);
@@ -152,16 +158,9 @@ class QueryBuilder
         return implode(',', array_fill(0, $numberOfRows, $rowPlaceholders));
     }
     
-    private function isOneRow(array $rows): bool
+    private function connectInsertColumns(array $rows): string
     {
-        return !is_array($rows[0]);
-    }
-    
-    private function connectInsertColumns(array $columns): string
-    {
-        if (empty($columns)) {
-            return '';
-        }
+        $columns = array_keys($rows[0]);
         return implode(', ', $columns);
     }
     
