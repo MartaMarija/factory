@@ -5,11 +5,11 @@ namespace App\Controllers;
 use App\AppError;
 use App\DB\QueryBuilder;
 use App\JsonResponse;
+use App\Models\User;
 use App\RequestInterface;
 use App\Response;
 use App\ResponseInterface;
 use App\TwigResponse;
-use Twig\Error\Error;
 
 class UserController
 {
@@ -50,18 +50,21 @@ class UserController
         return new JsonResponse(['user' => $user]);
     }
     
-    public function addUsers(RequestInterface $request): ResponseInterface
+    public function addUser(RequestInterface $request): ResponseInterface
     {
-        $users = $request->getParam('user');
+        $userData = $request->getParam('user');
+        $user = new User();
+        $user->first_name = $userData['first_name'];
+        $user->last_name = $userData['last_name'];
+        $user->email = $userData['email'];
+        $user->password = $userData['password'];
+        $user->user_type_id = $userData['user_type_id'];
         try {
-            $qb = new QueryBuilder();
-            $lastInsertedId = $qb
-                ->insert('user', $users, ['first_name', 'last_name', 'email', 'password'])
-                ->executeInsert();
+            $user->save();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
-        return new JsonResponse(['lastInsertedId' => $lastInsertedId]);
+        return new JsonResponse(['id' => $user->id]);
     }
     
     public function updateUserName(RequestInterface $request): ResponseInterface

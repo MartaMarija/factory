@@ -33,5 +33,5 @@ Router::addRoute(
 Router::addRoute(
     Request::METHOD_POST,
     $routeVersion . '/users',
-    [new UserController(), 'addUsers']
+    [new UserController(), 'addUser']
 );
