@@ -10,6 +10,7 @@ use App\RequestInterface;
 use App\Response;
 use App\ResponseInterface;
 use App\TwigResponse;
+use Twig\Error\Error;
 
 class UserController
 {
@@ -72,14 +73,9 @@ class UserController
         $id = $request->getParam('id');
         $newName = $request->getParam('name');
         try {
-            $qb = new QueryBuilder();
-            $numOfUpdatedRows = $qb
-                ->update('user')
-                ->set(['first_name' => $newName])
-                ->where([
-                    ['id' => ['=', $id]]
-                ])
-                ->executeUpdate();
+            $user = User::find($id);
+            $user->first_name = $newName;
+            $numOfUpdatedRows = 2;//$user->update();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
