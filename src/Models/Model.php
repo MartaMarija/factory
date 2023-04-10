@@ -12,6 +12,7 @@ abstract class Model
     protected static string $table;
     protected static string $primaryKeyName = 'id';
     protected array $data;
+    protected array $extraData;
     
     public function save(): void
     {
@@ -54,8 +55,7 @@ abstract class Model
     
     public function toArray(): array
     {
-        
-        return [];
+        return array_merge($this->data, $this->extraData);
     }
     
     public function __set($key, $value)
@@ -66,5 +66,10 @@ abstract class Model
     public function __get($key)
     {
         return $this->data[$key] ?? null;
+    }
+    
+    protected function addExtraData(string $key, mixed $value): void
+    {
+        $this->extraData[$key] = $value;
     }
 }

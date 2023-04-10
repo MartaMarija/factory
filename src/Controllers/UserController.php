@@ -36,19 +36,14 @@ class UserController
     public function getUserById(RequestInterface $request): ResponseInterface
     {
         $id = $request->getParam('id');
-        $qb = new QueryBuilder();
         try {
-            $user = $qb
-                ->select()
-                ->from('user')
-                ->where([
-                    ['id' => ['=', $id]]
-                ])
-                ->executeSelectOne();
+            $user = User::find($id);
+            $user->age = 20;
+            $arrayUser = $user->toArray();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
-        return new JsonResponse(['user' => $user]);
+        return new JsonResponse(['userAge' => $arrayUser['age']]);
     }
     
     public function addUser(RequestInterface $request): ResponseInterface
