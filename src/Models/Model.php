@@ -2,10 +2,7 @@
 
 namespace App\Models;
 
-use App\AppError;
 use App\DB\QueryBuilder;
-use App\Response;
-use Error;
 
 abstract class Model
 {
@@ -14,27 +11,29 @@ abstract class Model
     protected array $data;
     protected array $extraData;
     
-    public function save(): void
+    public function save(): static
     {
         $id = (new QueryBuilder())
             ->insert(static::$table, $this->data)
             ->executeInsert();
         $this->{static::$primaryKeyName} = $id;
+        return $this;
     }
     
-    public function update(): int
+    public function update(): static
     {
         $primaryKeyValue = $this->{static::$primaryKeyName};
         if (!isset($primaryKeyValue)) {
-            throw new AppError(Response::HTTP_NOT_FOUND, 'ID not found!');
+            return $this->save();
         }
-        return (new QueryBuilder())
+        (new QueryBuilder())
             ->update(static::$table)
             ->set($this->data)
             ->where([
                 [static::$primaryKeyName => ['=', $primaryKeyValue]]
             ])
             ->executeUpdate();
+        return $this;
     }
     
     public static function find(string $primaryKey): static
@@ -46,11 +45,7 @@ abstract class Model
                 [static::$primaryKeyName => ['=', $primaryKey]]
             ])
             ->executeSelectOne();
-        
-        $instance = new static();
-        $instance->data = $data;
-        
-        return $instance;
+        return self::hydrateNewInstance($data);
     }
     
     public function toArray(): array
@@ -66,6 +61,13 @@ abstract class Model
     public function __get($key)
     {
         return $this->data[$key] ?? null;
+    }
+    
+    protected static function hydrateNewInstance(?array $data): static
+    {
+        $instance = new static();
+        $instance->data = ($data == null) ? [] : $data;
+        return $instance;
     }
     
     protected function addExtraData(string $key, mixed $value): void
