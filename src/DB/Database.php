@@ -81,6 +81,16 @@ class Database
         return $statement->rowCount();
     }
     
+    public function delete(string $sqlStatement, array $placeholdersValues): bool
+    {
+        try {
+            $statement = $this->executeSqlStatement($sqlStatement, $placeholdersValues);
+        } catch (PDOException $e) {
+            throw new AppError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+        }
+        return $statement->rowCount() > 0;
+    }
+    
     private function bindInsertValues(array $placeholdersValues, PDOStatement $statement): void
     {
         $numberOfPlaceholders = 1;

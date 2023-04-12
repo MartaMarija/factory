@@ -199,4 +199,28 @@ class QueryBuilder
     {
         return implode(', ', array_map(fn ($key): string => "`$key`=:$key", array_keys($data)));
     }
+    
+    //-------------- DELETE --------------//
+    
+    public function executeDelete(): bool
+    {
+        $sqlStatement = $this->getDeleteStatement();
+        $db = Database::getInstance();
+        return $db->delete($sqlStatement, $this->placeholdersValues);
+    }
+    
+    private function getDeleteStatement(): string
+    {
+        $sqlStatement = "DELETE FROM $this->table";
+        if (!empty($this->whereConditions)) {
+            $sqlStatement .= " WHERE $this->whereConditions";
+        }
+        return $sqlStatement;
+    }
+    
+    public function delete(string $table): self
+    {
+        $this->table = $table;
+        return $this;
+    }
 }

@@ -39,6 +39,16 @@ abstract class Model
         }, $instances);
     }
     
+    public static function delete(string $primaryKey): bool
+    {
+        return (new QueryBuilder())
+            ->delete(static::$table)
+            ->where([
+                [static::$primaryKeyName => ['=', $primaryKey]]
+            ])
+            ->executeDelete();
+    }
+    
     public function save(): static
     {
         $id = (new QueryBuilder())
