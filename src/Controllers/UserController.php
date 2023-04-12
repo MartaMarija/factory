@@ -64,6 +64,29 @@ class UserController
         return new JsonResponse(['user' => $user->toArray()]);
     }
     
+    public function softDeleteUser(RequestInterface $request): ResponseInterface
+    {
+        $id = $request->getParam('id');
+        try {
+            $user = User::find($id);
+            $user = $user->softDelete();
+        } catch (AppError $e) {
+            return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
+        }
+        return new JsonResponse(['user' => $user->toArray()]);
+    }
+    
+    public function deleteUser(RequestInterface $request): ResponseInterface
+    {
+        $id = $request->getParam('id');
+        try {
+            $deleted = User::delete($id);
+        } catch (AppError $e) {
+            return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
+        }
+        return new JsonResponse(['deleted' => $deleted]);
+    }
+    
     public function getUsersTwig(RequestInterface $request): ResponseInterface
     {
         try {

@@ -35,3 +35,15 @@ Router::addRoute(
     $routeVersion . '/users',
     [new UserController(), 'addUser']
 );
+
+Router::addRoute(
+    Request::METHOD_DELETE,
+    $routeVersion . '/users/soft/{id}',
+    [new UserController(), 'softDeleteUser']
+);
+
+Router::addRoute(
+    Request::METHOD_DELETE,
+    $routeVersion . '/users/{id}',
+    [new UserController(), 'deleteUser']
+);
