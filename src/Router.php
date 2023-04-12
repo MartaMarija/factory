@@ -2,17 +2,19 @@
 
 namespace App;
 
+use App\Exceptions\AppError;
+
 class Router
 {
     private static array $routes;
-
+    
     public static function addRoute(string $method, string $url, callable $callback): void
     {
         $urlParts = explode('/', $url);
         $routeData = ['method' => $method, 'urlParts' => $urlParts, 'callback' => $callback];
         self::$routes[] = $routeData;
     }
-
+    
     public static function resolveRoute(RequestInterface $request): ResponseInterface
     {
         $requestUrlParts = $request->getUrlParts();

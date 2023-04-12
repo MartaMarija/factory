@@ -2,9 +2,9 @@
 
 namespace App\Controllers;
 
-use App\AppError;
 use App\DB\QueryBuilder;
 use App\Entities\User;
+use App\Exceptions\AppError;
 use App\JsonResponse;
 use App\RequestInterface;
 use App\ResponseInterface;

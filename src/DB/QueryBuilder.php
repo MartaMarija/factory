@@ -2,7 +2,7 @@
 
 namespace App\DB;
 
-use App\AppError;
+use App\Exceptions\AppError;
 use App\Response;
 use App\Utils;
 

@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Exceptions\AppError;
+
 class Request implements RequestInterface
 {
     public const METHOD_GET = 'GET';

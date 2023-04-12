@@ -2,9 +2,9 @@
 
 require_once 'vendor/autoload.php';
 
-use App\AppError;
-use App\Router;
+use App\Exceptions\AppError;
 use App\Request;
+use App\Router;
 
 include("./src/routes.php");
 
