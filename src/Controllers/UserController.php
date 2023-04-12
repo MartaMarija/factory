@@ -19,7 +19,7 @@ class UserController
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
-        return new JsonResponse(['users' => $users]);
+        return new JsonResponse(['users' => User::toArrays($users)]);
     }
     
     public function getUserById(RequestInterface $request): ResponseInterface

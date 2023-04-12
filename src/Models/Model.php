@@ -25,10 +25,18 @@ abstract class Model
     
     public static function getAll(): array
     {
-        return (new QueryBuilder())
+        $rows = (new QueryBuilder())
             ->select()
             ->from(static::$table)
             ->executeSelectAll();
+        return self::hydrateNewInstances($rows);
+    }
+    
+    public static function toArrays(array $instances): array
+    {
+        return array_map(function ($instance): array {
+            return $instance->toArray();
+        }, $instances);
     }
     
     public function save(): static
@@ -69,6 +77,15 @@ abstract class Model
     public function __get($key)
     {
         return $this->data[$key] ?? null;
+    }
+    
+    protected static function hydrateNewInstances(array $rows): array
+    {
+        $instances = [];
+        foreach ($rows as $row) {
+            $instances[] = static::hydrateNewInstance($row);
+        }
+        return $instances;
     }
     
     protected static function hydrateNewInstance(?array $data): static
