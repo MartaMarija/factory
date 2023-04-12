@@ -4,29 +4,18 @@ namespace App\Controllers;
 
 use App\AppError;
 use App\DB\QueryBuilder;
+use App\Entities\User;
 use App\JsonResponse;
-use App\Models\User;
 use App\RequestInterface;
-use App\Response;
 use App\ResponseInterface;
 use App\TwigResponse;
-use Twig\Error\Error;
 
 class UserController
 {
     public function getUsers(RequestInterface $request): ResponseInterface
     {
-        $qb = new QueryBuilder();
         try {
-            $users = $qb
-                ->select(['first_name', 'last_name'])
-                ->from('user')
-                ->where([
-                    ['email' => ['LIKE', '%.com']],
-                    ['email' => ['LIKE', 'm%']]
-                ])
-                ->limit(1)
-                ->executeSelectAll();
+            $users = User::getAll();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
@@ -35,15 +24,13 @@ class UserController
     
     public function getUserById(RequestInterface $request): ResponseInterface
     {
-        $id = $request->getParam('id');
+        $userId = $request->getParam('id');
         try {
-            $user = User::find($id);
-            $user->age = 20;
-            $arrayUser = $user->toArray();
+            $user = User::find($userId);
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
-        return new JsonResponse(['userAge' => $arrayUser['age']]);
+        return new JsonResponse(['user' => $user->toArray()]);
     }
     
     public function addUser(RequestInterface $request): ResponseInterface
@@ -63,18 +50,18 @@ class UserController
         return new JsonResponse(['id' => $user->id]);
     }
     
-    public function updateUserName(RequestInterface $request): ResponseInterface
+    public function updateUserEmail(RequestInterface $request): ResponseInterface
     {
         $id = $request->getParam('id');
-        $newName = $request->getParam('name');
+        $newEmail = $request->getParam('email');
         try {
             $user = User::find($id);
-            $user->first_name = $newName;
-            $numOfUpdatedRows = 2;//$user->update();
+            $user->email = $newEmail;
+            $user = $user->update();
         } catch (AppError $e) {
             return new JsonResponse(['error' => $e->getMessage()], $e->getCode());
         }
-        return new JsonResponse(['numOfUpdatedRows' => $numOfUpdatedRows]);
+        return new JsonResponse(['user' => $user->toArray()]);
     }
     
     public function getUsersTwig(RequestInterface $request): ResponseInterface

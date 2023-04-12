@@ -8,8 +8,28 @@ abstract class Model
 {
     protected static string $table;
     protected static string $primaryKeyName = 'id';
-    protected array $data;
-    protected array $extraData;
+    protected array $data = [];
+    protected array $extraData = [];
+    
+    public static function find(string $primaryKey): static
+    {
+        $data = (new QueryBuilder())
+            ->select()
+            ->from(static::$table)
+            ->where([
+                [static::$primaryKeyName => ['=', $primaryKey]]
+            ])
+            ->executeSelectOne();
+        return self::hydrateNewInstance($data);
+    }
+    
+    public static function getAll(): array
+    {
+        return (new QueryBuilder())
+            ->select()
+            ->from(static::$table)
+            ->executeSelectAll();
+    }
     
     public function save(): static
     {
@@ -34,18 +54,6 @@ abstract class Model
             ])
             ->executeUpdate();
         return $this;
-    }
-    
-    public static function find(string $primaryKey): static
-    {
-        $data = (new QueryBuilder())
-            ->select()
-            ->from(static::$table)
-            ->where([
-                [static::$primaryKeyName => ['=', $primaryKey]]
-            ])
-            ->executeSelectOne();
-        return self::hydrateNewInstance($data);
     }
     
     public function toArray(): array

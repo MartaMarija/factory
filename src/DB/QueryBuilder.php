@@ -197,6 +197,6 @@ class QueryBuilder
     
     private function connectSetClause(array $data): string
     {
-        return implode(', ', array_map(fn ($key) => "`$key`=:$key", array_keys($data)));
+        return implode(', ', array_map(fn ($key): string => "`$key`=:$key", array_keys($data)));
     }
 }

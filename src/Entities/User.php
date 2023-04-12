@@ -1,6 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Entities;
+
+use App\DB\QueryBuilder;
+use App\Models\Model;
 
 class User extends Model
 {
@@ -9,7 +12,7 @@ class User extends Model
     
     public function toArray(): array
     {
-        parent::addExtraData('age', $this->age);
+        parent::addExtraData('age', $this->age ?? null);
         return parent::toArray();
     }
 }

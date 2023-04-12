@@ -27,7 +27,7 @@ Router::addRoute(
 Router::addRoute(
     Request::METHOD_POST,
     $routeVersion . '/users/{id}',
-    [new UserController(), 'updateUserName']
+    [new UserController(), 'updateUserEmail']
 );
 
 Router::addRoute(
