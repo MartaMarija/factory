@@ -6,17 +6,20 @@ trait HasTimestamps
 {
     public function save(): static
     {
-        $this->created_at = date('Y-m-d H:i:s');
+        $now = $this->dateFormat();
+        $this->created_at = $now;
+        $this->updated_at = $now;
         return parent::save();
     }
     
     public function update(): static
     {
+        $now = $this->dateFormat();
         $primaryKeyValue = $this->{static::$primaryKeyName};
         if (!isset($primaryKeyValue)) {
-            $this->created_at = date('Y-m-d H:i:s');
+            $this->created_at = $now;
         }
-        $this->updated_at = date('Y-m-d H:i:s');
+        $this->updated_at = $now;
         return parent::update();
     }
     
@@ -25,7 +28,14 @@ trait HasTimestamps
         if ($this->deleted_at != null) {
             return $this;
         }
-        $this->deleted_at = date('Y-m-d H:i:s');
+        $now = $this->dateFormat();
+        $this->updated_at = $now;
+        $this->deleted_at = $now;
         return parent::update();
+    }
+    
+    protected function dateFormat(): string
+    {
+        return date('Y-m-d H:i:s');
     }
 }
